@@ -1,0 +1,50 @@
+Tutorial basico Django
+
+# Crear base con nombre deseado 
+1. django-admin startproject nombre_deseado
+
+# Agregar path para archivos estaticos y CSS al final de settings
+2. STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Crear base de datos local necesaria
+3. python manage.py migrate
+
+# Correr proyecto en dominio local
+4. python manage.py runserver
+
+# Crear nueva app (en carpeta separada de lo demas) con el nombre deseado. Esta se especifica dentro de settings en la seccion de INSTALLED_APPS
+5. python manage.py startapp nombre_deseado_2
+
+# Adicionar modelos de plantilla. Reemplazar lo existente dentro de models.py por:
+6. from django.db import models
+from django.utils import timezone
+
+
+class Post(models.Model):
+    
+    author = models.ForeignKey('auth.User', on_delete=models.DO_NOTHING)
+    title = models.CharField(max_length=200)
+    text = models.TextField()
+    created_date = models.DateTimeField(
+            default=timezone.now)
+    published_date = models.DateTimeField(
+            blank=True, null=True)
+
+    def publish(self):
+        self.published_date = timezone.now()
+        self.save()
+
+    def __str__(self):
+       return self.title
+# Añadir este nuevo modelo a la base de datos
+7. python manage.py makemigrations nombre_deseado_2
+8. python manage.py migrate nombre_deseado_2
+
+# Para agregar, editar y borrar el nuevo modelo adicionado se realiza en el archivo admin.py. Se adicionan las siguientes lineas, para este caso se importa Post.
+9. 
+from .models import Post
+admin.site.register(Post)
+
+# Crear superusuario
+10.
+python manage.py createsuperuser
